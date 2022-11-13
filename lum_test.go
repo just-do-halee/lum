@@ -9,15 +9,17 @@ func TestBatchRun(t *testing.T) {
 	}
 	Batch[Args, int]{
 		{
-			Args: Args{1, 1},
-			Pass: func(c *Ctx[Args, int]) {
+			"Sum proper test",
+			Args{1, 1},
+			func(c *Ctx[Args, int]) {
 				c.Log("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertEqual(c.Result, 2, "should be 2")
 			},
 		},
 		{
-			Args: Args{1, 3},
-			Pass: func(c *Ctx[Args, int]) {
+			"It should be",
+			Args{1, 3},
+			func(c *Ctx[Args, int]) {
 				c.Log("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.Assert(c.Result > 3, "should be more than 3")
 			},
