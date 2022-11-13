@@ -32,37 +32,43 @@ func Sum(a, b int) int { return a + b }
 package example
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/just-do-halee/lum"
+    "github.com/just-do-halee/lum"
 )
 
 func TestSum(t *testing.T) {
-	type Args struct {
-		a, b int
-	}
-	// [Argument, Result Type]
-	lum.Batch[Args, int]{
-		{
-			Args: Args{1, 1},
-			Pass: func(c *lum.Ctx[Args, int]) {
-				want := 2
-				c.AssertResultEqual(want, "should be %v", want)
-			},
-		},
-		{
-			Args: Args{1, 3},
-			Pass: func(c *lum.Ctx[Args, int]) {
-				c.Log(c.Arguments)
-				c.Log("result: %v", c.Result)
-				c.Assert(c.Result > 3, "should be more than 3")
-				c.Assert(c.Result < 5, "should be less than 5")
+    // ... Before All ...
 
-			},
-		},
-	}.Run(t, "Sum", func(a Args) int {
-		// Call the actual function
-		return Sum(a.a, a.b)
-	})
+    // Test Function Arguments
+    type Args struct {
+        a, b int
+    }
+
+    // [Argument, Result Type]
+    lum.Batch[Args, int]{
+        {
+             "1 + 1 = 2"
+            Args{1, 1},
+            func(c *lum.Ctx[Args, int]) {
+                c.AssertResultEqual(2)
+            },
+        },
+        {
+            "3 > 1 + 3 < 5"
+            Args{1, 3},
+            func(c *lum.Ctx[Args, int]) {
+                c.Log(c.Arguments)
+                c.Logf("result: %v", c.Result)
+                c.Assert(c.Result > 3, "should be more than 3")
+                c.Assertf(c.Result < 5, "should be less than %v", 5)
+            },
+        },
+    }.Run(t, "Sum", func(a Args) int {
+        // ... Before Each ...
+
+        // Call The Actual Function
+        return Sum(a.a, a.b)
+    })
 }
 ```
