@@ -16,8 +16,8 @@
 
 | [Examples](./examples/) | [Latest Note](./CHANGELOG.md) |
 
-```toml
-lum = "0.1.0"
+```shell
+go get -u github.com/just-do-halee/lum
 ```
 
 ## **`How to use,`**
@@ -32,35 +32,36 @@ func Sum(a, b int) int { return a + b }
 package example
 
 import (
-    "testing"
-    "github.com/just-do-halee/lum"
+	"testing"
+
+	"github.com/just-do-halee/lum"
 )
 
 func TestSum(t *testing.T) {
-	type Arg struct {
+	type Args struct {
 		a, b int
 	}
 	// [Argument, Result Type]
-	lum.Batch[Arg, int]{
+	lum.Batch[Args, int]{
 		{
-			Arg: Arg{1, 1},
-			Pass: func(c *lum.Ctx[Arg, int]) {
+			Args: Args{1, 1},
+			Pass: func(c *lum.Ctx[Args, int]) {
 				want := 2
-				c.AssertResultEqual(2, "should be %v", want)
+				c.AssertResultEqual(want, "should be %v", want)
 			},
 		},
 		{
-			Arg: Arg{1, 3},
-			Pass: func(c *lum.Ctx[Arg, int]) {
+			Args: Args{1, 3},
+			Pass: func(c *lum.Ctx[Args, int]) {
 				c.Log(c.Arguments)
- 				c.Log("result: %v", c.Result)
+				c.Log("result: %v", c.Result)
 				c.Assert(c.Result > 3, "should be more than 3")
- 				c.Assert(c.Result < 5, "should be less than 5")
-                
+				c.Assert(c.Result < 5, "should be less than 5")
+
 			},
 		},
-	}.Run(t, "Sum", func(a Arg) int {
- 		// Call the actual function
+	}.Run(t, "Sum", func(a Args) int {
+		// Call the actual function
 		return Sum(a.a, a.b)
 	})
 }
