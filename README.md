@@ -48,21 +48,32 @@ func TestSum(t *testing.T) {
     // [Argument, Result Type]
     lum.Batch[Args, int]{
         {
-             "1 + 1 = 2",
-            Args{1, 1},
-            func(c *lum.Ctx[Args, int]) {
+            Name: "1 + 1 = 2",
+            Args: Args{1, 1},
+            Pass: func(c *lum.Ctx[Args, int]) {
                 c.AssertResultEqual(2)
             },
         },
         {
-            "3 > 1 + 3 < 5",
-            Args{1, 3},
-            func(c *lum.Ctx[Args, int]) {
+            Name: "3 > 1 + 3 < 5",
+            Args: Args{1, 3},
+            Pass: func(c *lum.Ctx[Args, int]) {
                 c.Log(c.Arguments)
                 c.Logf("result: %v", c.Result)
                 c.Assert(c.Result > 3, "should be more than 3")
                 c.Assertf(c.Result < 5, "should be less than %v", 5)
             },
+        },
+        {
+            Name: "3 + 5 ...?",
+            Args: Args{3, 5},
+            // This is unimplemented, so it won't occur any error
+        },
+        {
+            Name: "2 + 4 != 7",
+            Args: Args{2, 4},
+            // This is todo, so it will occur an error has meta message
+            Pass: lum.Todo[Args, int]("not equal testing"),
         },
     }.Run(t, "Sum", func(a Args) int {
         // ... Before Each ...

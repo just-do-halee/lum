@@ -9,20 +9,29 @@ func TestBatchRun(t *testing.T) {
 	}
 	Batch[Args, int]{
 		{
-			"Sum proper test",
-			Args{1, 1},
-			func(c *Ctx[Args, int]) {
+			Name: "Sum proper test",
+			Args: Args{1, 1},
+			Pass: func(c *Ctx[Args, int]) {
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertEqual(c.Result, 2, "should be 2")
 			},
 		},
 		{
-			"It should be",
-			Args{1, 3},
-			func(c *Ctx[Args, int]) {
+			Name: "It should be",
+			Args: Args{1, 3},
+			Pass: func(c *Ctx[Args, int]) {
 				c.Log(c.Arguments.a, " + ", c.Arguments.b, " = ", c.Result)
 				c.Assertf(c.Result > 3, "should be more than %v", 3)
 			},
+		},
+		{
+			Name: "it is mock",
+			Args: Args{1, 3},
+		},
+		{
+			Name: "It should be",
+			Args: Args{1, 3},
+			// Pass: Todo[Args, int]("qwdqwd"),
 		},
 	}.Run(t, "Sum", func(a Args) int {
 		return sum(a.a, a.b)

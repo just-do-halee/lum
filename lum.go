@@ -146,9 +146,13 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) {
 			t:         t,
 			FuncName:  fnName,
 			Arguments: f.Args,
-			Result:    fn(f.Args),
 		}
-		f.Pass(ctx)
+		if fn != nil {
+			ctx.Result = fn(f.Args)
+		}
+		if f.Pass != nil {
+			f.Pass(ctx)
+		}
 	})
 }
 
@@ -157,5 +161,17 @@ type Batch[A Argumenter, R Resulter] []Field[A, R]
 func (b Batch[A, R]) Run(t *testing.T, fnName string, fn func(a A) R) {
 	for _, test := range b {
 		test.Run(t, fnName, fn)
+	}
+}
+
+func Todo[Arg Argumenter, Res Resulter](a ...any) FnPass[Arg, Res] {
+	return func(c *Ctx[Arg, Res]) {
+		c.Assert(false, a...)
+	}
+}
+
+func Todof[Arg Argumenter, Res Resulter](format string, a ...any) FnPass[Arg, Res] {
+	return func(c *Ctx[Arg, Res]) {
+		c.Assertf(false, format, a...)
 	}
 }
