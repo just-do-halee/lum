@@ -12,7 +12,7 @@ func TestBatchRun(t *testing.T) {
 			"Sum proper test",
 			Args{1, 1},
 			func(c *Ctx[Args, int]) {
-				c.Log("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
+				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertEqual(c.Result, 2, "should be 2")
 			},
 		},
@@ -20,8 +20,8 @@ func TestBatchRun(t *testing.T) {
 			"It should be",
 			Args{1, 3},
 			func(c *Ctx[Args, int]) {
-				c.Log("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
-				c.Assert(c.Result > 3, "should be more than 3")
+				c.Log(c.Arguments.a, " + ", c.Arguments.b, " = ", c.Result)
+				c.Assertf(c.Result > 3, "should be more than %v", 3)
 			},
 		},
 	}.Run(t, "Sum", func(a Args) int {

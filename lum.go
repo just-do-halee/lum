@@ -20,75 +20,113 @@ type Ctx[Arg Argumenter, Res Resulter] struct {
 	Arguments Arg
 	Result    Res
 	reason    string
-	logs      string
+	logs      Stringify
+}
+
+func (c *Ctx[Arg, Res]) setReason(a ...any) {
+	c.reason = fmt.Sprint(a...)
+}
+
+func (c *Ctx[Arg, Res]) setReasonf(format string, a ...any) {
+	c.reason = fmt.Sprintf(format, a...)
 }
 
 func (c *Ctx[Arg, Res]) String() string {
-	return fmt.Sprintf("\n%s\n%s(%v)  -->  %v  \t%s\t", c.logs, c.FuncName, c.Arguments, c.Result, c.reason)
+	return fmt.Sprintf("\n%s\n%s(%v)  -->  %v  \t%s\t", c.logs.String(), c.FuncName, c.Arguments, c.Result, c.reason)
 }
 
 func (c *Ctx[Arg, Res]) Log(a ...any) {
-	newLine := "\n"
-	switch len(a) {
-	case 0:
-		c.logs += newLine
-	case 1:
-		c.logs += fmt.Sprint(a[0], newLine)
-	default:
-		format := fmt.Sprint(a[0])
-		c.logs += fmt.Sprintf(format+newLine, a[1:]...)
-	}
+	c.logs.WriteStrings(a...)
+	c.logs.Writeln()
+}
+
+func (c *Ctx[Arg, Res]) Logf(format string, a ...any) {
+	c.logs.WriteString(fmt.Sprintf(format+"\n", a...))
 }
 
 func (c *Ctx[Arg, Res]) ResetLogs() {
-	c.logs = ""
+	c.logs.Reset()
 }
 
 func (c *Ctx[Arg, Res]) Fail(a ...any) {
-	newLine := "\n"
-	switch len(a) {
-	case 0:
-		c.t.Error(c.String(), newLine)
-	case 1:
-		c.t.Error(c.String(), a[0], newLine)
-	default:
-		format := fmt.Sprint(a[0])
-		c.t.Error(c.String(), fmt.Sprintf(format, a[1:]...), newLine)
+	var sb Stringify
+	sb.WriteString(c.String())
+	sb.WriteStrings(a...)
+	sb.Writeln()
+	c.t.Error(sb.String())
+}
+
+func (c *Ctx[Arg, Res]) Failf(format string, a ...any) {
+	c.t.Error(c.String(), fmt.Sprintf(format, a...), "\n")
+}
+
+func (c *Ctx[Arg, Res]) AssertResultEqual(rhs Res, a ...any) {
+	if c.Result != rhs {
+		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.Fail(a...)
 	}
 }
 
-func (c *Ctx[Arg, Res]) AssertResultEqual(a Res, format ...any) {
-	if c.Result != a {
-		c.reason = fmt.Sprintf("%v == %v [fail]", c.Result, a)
-		c.Fail(format...)
+func (c *Ctx[Arg, Res]) AssertResultEqualf(rhs Res, format string, a ...any) {
+	if c.Result != rhs {
+		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.Failf(format, a...)
 	}
 }
 
-func (c *Ctx[Arg, Res]) AssertEqual(a, b Res, format ...any) {
-	if a != b {
-		c.reason = fmt.Sprintf("%v == %v [fail]", a, b)
-		c.Fail(format...)
+func (c *Ctx[Arg, Res]) AssertEqual(lhs, rhs Res, a ...any) {
+	if lhs != rhs {
+		c.setReasonf("%v == %v [fail]", lhs, rhs)
+		c.Fail(a...)
 	}
 }
 
-func (c *Ctx[Arg, Res]) AssertResultNotEqual(a Res, format ...any) {
-	if c.Result == a {
-		c.reason = fmt.Sprintf("%v == %v [fail]", c.Result, a)
-		c.Fail(format...)
+func (c *Ctx[Arg, Res]) AssertEqualf(lhs, rhs Res, format string, a ...any) {
+	if lhs != rhs {
+		c.setReasonf("%v == %v [fail]", lhs, rhs)
+		c.Failf(format, a...)
 	}
 }
 
-func (c *Ctx[Arg, Res]) AssertNotEqual(a, b Res, format ...any) {
-	if a == b {
-		c.reason = fmt.Sprintf("%v != %v [fail]", a, b)
-		c.Fail(format...)
+func (c *Ctx[Arg, Res]) AssertResultNotEqual(rhs Res, a ...any) {
+	if c.Result == rhs {
+		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.Fail(a...)
+	}
+}
+
+func (c *Ctx[Arg, Res]) AssertResultNotEqualf(rhs Res, format string, a ...any) {
+	if c.Result == rhs {
+		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.Failf(format, a...)
+	}
+}
+
+func (c *Ctx[Arg, Res]) AssertNotEqual(lhs, rhs Res, a ...any) {
+	if lhs == rhs {
+		c.setReasonf("%v != %v [fail]", lhs, rhs)
+		c.Fail(a...)
+	}
+}
+
+func (c *Ctx[Arg, Res]) AssertNotEqualf(lhs, rhs Res, format string, a ...any) {
+	if lhs == rhs {
+		c.setReasonf("%v != %v [fail]", lhs, rhs)
+		c.Failf(format, a...)
 	}
 }
 
 func (c *Ctx[Arg, Res]) Assert(b bool, a ...any) {
 	if !b {
-		c.reason = "<assertion>"
+		c.setReason("<assertion>")
 		c.Fail(a...)
+	}
+}
+
+func (c *Ctx[Arg, Res]) Assertf(b bool, format string, a ...any) {
+	if !b {
+		c.setReason("<assertion>")
+		c.Failf(format, a...)
 	}
 }
 
