@@ -17,7 +17,7 @@
 | [Examples](./examples/) | [Latest Note](./CHANGELOG.md) |
 
 ```shell
-go get -u github.com/just-do-halee/lum
+go get -u github.com/just-do-halee/lum@latest
 ```
 
 ## **`How to use,`**
@@ -48,14 +48,14 @@ func TestSum(t *testing.T) {
     // [Argument, Result Type]
     lum.Batch[Args, int]{
         {
-             "1 + 1 = 2"
+             "1 + 1 = 2",
             Args{1, 1},
             func(c *lum.Ctx[Args, int]) {
                 c.AssertResultEqual(2)
             },
         },
         {
-            "3 > 1 + 3 < 5"
+            "3 > 1 + 3 < 5",
             Args{1, 3},
             func(c *lum.Ctx[Args, int]) {
                 c.Log(c.Arguments)
