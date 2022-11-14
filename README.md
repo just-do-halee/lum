@@ -3,6 +3,7 @@
 
 `Lum` is a simple, expandable, ergonomic test tool in Go (Amazingly small package lol).
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/just-do-halee/lum.svg)](https://pkg.go.dev/github.com/just-do-halee/lum)
 [![CI][ci-badge]][ci-url]
 [![Licensed][license-badge]][license-url]
 [![Twitter][twitter-badge]][twitter-url]
