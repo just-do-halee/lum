@@ -166,6 +166,10 @@ type Field[Arg Argumenter, Res Resulter] struct {
 	Loop uint
 }
 
+func (f Field[Arg, Res]) Mock() Field[Arg, Res] {
+	return Field[Arg, Res]{}
+}
+
 func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx *Ctx[Arg, Res]) {
 	t.Run(f.Name, func(t *testing.T) {
 		ctx = &Ctx[Arg, Res]{
@@ -194,6 +198,10 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx 
 }
 
 type Batch[A Argumenter, R Resulter] []Field[A, R]
+
+func (b Batch[A, R]) Mock() Batch[A, R] {
+	return Batch[A, R]{}
+}
 
 func (b Batch[A, R]) Run(t *testing.T, fnName string, fn func(a A) R) {
 	for _, test := range b {

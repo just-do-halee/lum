@@ -28,5 +28,5 @@ func TestSum(t *testing.T) {
 			Args: Args{},
 			Pass: lum.Todof[Args, int]("What can i do to test this function? Args.. %v", Args{1, 2}),
 		},
-	}.Run(t, "Sum", nil)
+	}.Mock().Run(t, "Sum", nil)
 }
