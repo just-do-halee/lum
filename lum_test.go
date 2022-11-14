@@ -15,11 +15,10 @@ func TestBatchRun(t *testing.T) {
 			Args: Args{1, 1},
 			Pass: func(c *Ctx[Args, int]) {
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
-				if c.Result != 2 {
-					c.Fatal()
-				}
-				// c.AssertEqual(c.Result, 2, "should be 2")
+				c.AssertResultEqual(c.Arguments.a + c.Arguments.b)
+				c.Arguments.a++
 			},
+			Loop: 10,
 		},
 		{
 			Name: "It should be",

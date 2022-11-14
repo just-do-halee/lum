@@ -147,12 +147,23 @@ func (c *Ctx[Arg, Res]) Assertf(b bool, format string, a ...any) {
 
 type Fn[Arg Argumenter, Res Resulter] func(Arg) Res
 
+func FnMock[Arg Argumenter, Res Resulter]() Fn[Arg, Res] {
+	return func(Arg) Res {
+		return *new(Res)
+	}
+}
+
 type FnPass[Arg Argumenter, Res Resulter] func(*Ctx[Arg, Res])
+
+func FnPassMock[Arg Argumenter, Res Resulter]() FnPass[Arg, Res] {
+	return func(*Ctx[Arg, Res]) {}
+}
 
 type Field[Arg Argumenter, Res Resulter] struct {
 	Name string
 	Args Arg
 	Pass FnPass[Arg, Res]
+	Loop uint
 }
 
 func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx *Ctx[Arg, Res]) {
@@ -162,10 +173,19 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx 
 			FuncName:  fnName,
 			Arguments: f.Args,
 		}
-		if fn != nil {
-			ctx.Result = fn(f.Args)
+		if fn == nil {
+			fn = FnMock[Arg, Res]()
 		}
-		if f.Pass != nil {
+		if f.Pass == nil {
+			f.Pass = FnPassMock[Arg, Res]()
+		}
+		isLoop := f.Loop > 0
+		for i := uint(1); i <= f.Loop; i++ {
+			ctx.ResetLogs()
+			if isLoop {
+				ctx.Logf("[LOOP] %d\n", i)
+			}
+			ctx.Result = fn(ctx.Arguments)
 			f.Pass(ctx)
 		}
 	})
