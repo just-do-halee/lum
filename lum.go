@@ -183,8 +183,10 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx 
 		if f.Pass == nil {
 			f.Pass = FnPassMock[Arg, Res]()
 		}
-		isLoop := f.Loop > 0
-		f.Loop++
+		if f.Loop == 0 {
+			f.Loop = 1
+		}
+		isLoop := f.Loop > 1
 		for i := uint(1); i <= f.Loop; i++ {
 			ctx.ResetLogs()
 			if isLoop {
