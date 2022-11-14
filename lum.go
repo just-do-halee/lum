@@ -180,6 +180,7 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx 
 			f.Pass = FnPassMock[Arg, Res]()
 		}
 		isLoop := f.Loop > 0
+		f.Loop++
 		for i := uint(1); i <= f.Loop; i++ {
 			ctx.ResetLogs()
 			if isLoop {
