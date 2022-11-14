@@ -12,6 +12,8 @@ func TestSum(t *testing.T) {
 	type Args struct {
 		a, b int
 	}
+	type Ctx = *lum.Context[Args, int]
+
 	lum.Batch[Args, int]{
 		{
 			Name: "Increment lhs by 1, 100 times",

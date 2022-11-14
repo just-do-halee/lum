@@ -9,11 +9,13 @@ func TestBatchRun(t *testing.T) {
 	type Args struct {
 		a, b int
 	}
+	type Ctx = *Context[Args, int]
+
 	Batch[Args, int]{
 		{
 			Name: "Sum proper test",
 			Args: Args{1, 1},
-			Pass: func(c *Ctx[Args, int]) {
+			Pass: func(c Ctx) {
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertResultEqual(c.Arguments.a + c.Arguments.b)
 				c.Arguments.a++
@@ -23,7 +25,7 @@ func TestBatchRun(t *testing.T) {
 		{
 			Name: "It should be",
 			Args: Args{1, 3},
-			Pass: func(c *Ctx[Args, int]) {
+			Pass: func(c Ctx) {
 				c.Log(c.Arguments.a, " + ", c.Arguments.b, " = ", c.Result)
 				c.Assertf(c.Result > 3, "should be more than %v", 3)
 			},
@@ -44,9 +46,10 @@ func TestBatchRun(t *testing.T) {
 
 func TestFieldRunPanic(t *testing.T) {
 	hello := func() string { return "hello" }
+	type Ctx = *Context[Void, string]
 
 	Field[Void, string]{
-		Pass: func(c *Ctx[Void, string]) {
+		Pass: func(c Ctx) {
 			c.AssertNotEqual(c.Result, "hello!")
 		},
 	}.Run(t, "Hello", func(Void) string {
@@ -59,9 +62,11 @@ func TestFieldRun(t *testing.T) {
 	type Args struct {
 		a, b int
 	}
+	type Ctx = *Context[Args, int]
+
 	Field[Args, int]{
 		Args: Args{1, 1},
-		Pass: func(c *Ctx[Args, int]) {
+		Pass: func(c Ctx) {
 			c.AssertResultEqual(2, "should be 2 but %v", c.Result)
 		},
 	}.Run(t, "Sum", func(a Args) int {

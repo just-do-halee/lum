@@ -45,24 +45,24 @@ func TestSum(t *testing.T) {
     type Args struct {
         a, b int
     }
+    // Context Alias
+    type Ctx = *lum.Context[Args, int]
 
     // [Argument, Result Type]
     lum.Batch[Args, int]{
         {
             Name: "1 + 1 = 2",
             Args: Args{1, 1},
-            Pass: func(c *lum.Ctx[Args, int]) {
+            Pass: func(c Ctx) {
                 // ... Assert ...
-
                 c.AssertResultEqual(2)
             },
         },
         {
             Name: "3 > 1 + 3 < 5",
             Args: Args{1, 3},
-            Pass: func(c *lum.Ctx[Args, int]) {
+            Pass: func(c Ctx) {
                 // ... Assert ...
-
                 c.Log(c.Arguments)
                 c.Logf("result: %v", c.Result)
 
@@ -86,9 +86,9 @@ func TestSum(t *testing.T) {
 
         // Call The Actual Function
         return Sum(a.a, a.b)
-    }, func(c *lum.Ctx[Args, int]) {
-        // ... After Each ...
 
+    }, func(c Ctx) {
+        // ... After Each ...
     })
     
     // ... After All ...

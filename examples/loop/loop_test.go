@@ -12,12 +12,13 @@ func TestSum(t *testing.T) {
 	type Args struct {
 		a, b int
 	}
+	type Ctx = *lum.Context[Args, int]
 
 	lum.Batch[Args, int]{
 		{
 			Name: "Increment lhs by 1, 100 times",
 			Args: Args{1, 1},
-			Pass: func(c *lum.Ctx[Args, int]) {
+			Pass: func(c Ctx) {
 				// assert
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertResultEqual(c.Arguments.a + c.Arguments.b)
@@ -27,7 +28,7 @@ func TestSum(t *testing.T) {
 	}.Run(t, "Sum", func(a Args) int {
 		// before each
 		return Sum(a.a, a.b)
-	}, func(c *lum.Ctx[Args, int]) {
+	}, func(c Ctx) {
 		// after each
 		c.Arguments.a++
 	})
