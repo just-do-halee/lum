@@ -21,6 +21,8 @@ type Ctx[Arg Argumenter, Res Resulter] struct {
 	Result    Res
 	reason    string
 	logs      Stringify
+
+	IsFatal bool
 }
 
 func (c *Ctx[Arg, Res]) setReason(a ...any) {
@@ -48,6 +50,19 @@ func (c *Ctx[Arg, Res]) ResetLogs() {
 	c.logs.Reset()
 }
 
+func (c *Ctx[Arg, Res]) Fatal(a ...any) {
+	var sb Stringify
+	sb.WriteString(c.String())
+	sb.WriteStrings(a...)
+	sb.Writeln()
+	c.IsFatal = true
+	c.t.Fatal(sb.String())
+}
+
+func (c *Ctx[Arg, Res]) Fatalf(format string, a ...any) {
+	c.IsFatal = true
+	c.t.Fatal(c.String(), fmt.Sprintf(format, a...), "\n")
+}
 func (c *Ctx[Arg, Res]) Fail(a ...any) {
 	var sb Stringify
 	sb.WriteString(c.String())
@@ -140,9 +155,9 @@ type Field[Arg Argumenter, Res Resulter] struct {
 	Pass FnPass[Arg, Res]
 }
 
-func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) {
+func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx *Ctx[Arg, Res]) {
 	t.Run(f.Name, func(t *testing.T) {
-		ctx := &Ctx[Arg, Res]{
+		ctx = &Ctx[Arg, Res]{
 			t:         t,
 			FuncName:  fnName,
 			Arguments: f.Args,
@@ -154,13 +169,16 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) {
 			f.Pass(ctx)
 		}
 	})
+	return
 }
 
 type Batch[A Argumenter, R Resulter] []Field[A, R]
 
 func (b Batch[A, R]) Run(t *testing.T, fnName string, fn func(a A) R) {
 	for _, test := range b {
-		test.Run(t, fnName, fn)
+		if test.Run(t, fnName, fn).IsFatal {
+			break
+		}
 	}
 }
 

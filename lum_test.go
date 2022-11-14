@@ -1,6 +1,8 @@
 package lum
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBatchRun(t *testing.T) {
 	sum := func(a, b int) int { return a + b }
@@ -13,7 +15,10 @@ func TestBatchRun(t *testing.T) {
 			Args: Args{1, 1},
 			Pass: func(c *Ctx[Args, int]) {
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
-				c.AssertEqual(c.Result, 2, "should be 2")
+				if c.Result != 2 {
+					c.Fatal()
+				}
+				// c.AssertEqual(c.Result, 2, "should be 2")
 			},
 		},
 		{
