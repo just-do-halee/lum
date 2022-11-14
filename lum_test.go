@@ -39,7 +39,7 @@ func TestBatchRun(t *testing.T) {
 		},
 	}.Run(t, "Sum", func(a Args) int {
 		return sum(a.a, a.b)
-	})
+	}, nil)
 }
 
 func TestFieldRunPanic(t *testing.T) {
@@ -51,7 +51,7 @@ func TestFieldRunPanic(t *testing.T) {
 		},
 	}.Run(t, "Hello", func(Void) string {
 		return hello()
-	})
+	}, nil)
 }
 
 func TestFieldRun(t *testing.T) {
@@ -66,5 +66,5 @@ func TestFieldRun(t *testing.T) {
 		},
 	}.Run(t, "Sum", func(a Args) int {
 		return sum(a.a, a.b)
-	})
+	}, nil)
 }

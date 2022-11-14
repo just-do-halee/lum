@@ -170,15 +170,18 @@ func (f Field[Arg, Res]) Mock() Field[Arg, Res] {
 	return Field[Arg, Res]{}
 }
 
-func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx *Ctx[Arg, Res]) {
+func (f Field[Arg, Res]) Run(t *testing.T, fnName string, beforeEach Fn[Arg, Res], afterEach FnPass[Arg, Res]) (ctx *Ctx[Arg, Res]) {
 	t.Run(f.Name, func(t *testing.T) {
 		ctx = &Ctx[Arg, Res]{
 			t:         t,
 			FuncName:  fnName,
 			Arguments: f.Args,
 		}
-		if fn == nil {
-			fn = FnMock[Arg, Res]()
+		if beforeEach == nil {
+			beforeEach = FnMock[Arg, Res]()
+		}
+		if afterEach == nil {
+			afterEach = FnPassMock[Arg, Res]()
 		}
 		if f.Pass == nil {
 			f.Pass = FnPassMock[Arg, Res]()
@@ -192,22 +195,26 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, fn Fn[Arg, Res]) (ctx 
 			if isLoop {
 				ctx.Logf("[LOOP] %d\n", i)
 			}
-			ctx.Result = fn(ctx.Arguments)
+			// before each and execute
+			ctx.Result = beforeEach(ctx.Arguments)
+			// test assert
 			f.Pass(ctx)
+			// after each
+			afterEach(ctx)
 		}
 	})
 	return
 }
 
-type Batch[A Argumenter, R Resulter] []Field[A, R]
+type Batch[Arg Argumenter, Res Resulter] []Field[Arg, Res]
 
-func (b Batch[A, R]) Mock() Batch[A, R] {
-	return Batch[A, R]{}
+func (b Batch[Arg, Res]) Mock() Batch[Arg, Res] {
+	return Batch[Arg, Res]{}
 }
 
-func (b Batch[A, R]) Run(t *testing.T, fnName string, fn func(a A) R) {
+func (b Batch[Arg, Res]) Run(t *testing.T, fnName string, beforeEach Fn[Arg, Res], afterEach FnPass[Arg, Res]) {
 	for _, test := range b {
-		if test.Run(t, fnName, fn).IsFatal {
+		if test.Run(t, fnName, beforeEach, afterEach).IsFatal {
 			break
 		}
 	}
