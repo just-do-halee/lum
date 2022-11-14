@@ -52,6 +52,8 @@ func TestSum(t *testing.T) {
             Name: "1 + 1 = 2",
             Args: Args{1, 1},
             Pass: func(c *lum.Ctx[Args, int]) {
+                // ... After Each ...
+
                 c.AssertResultEqual(2)
             },
         },
@@ -59,8 +61,10 @@ func TestSum(t *testing.T) {
             Name: "3 > 1 + 3 < 5",
             Args: Args{1, 3},
             Pass: func(c *lum.Ctx[Args, int]) {
+                // ... After Each ...
                 c.Log(c.Arguments)
                 c.Logf("result: %v", c.Result)
+
                 c.Assert(c.Result > 3, "should be more than 3")
                 c.Assertf(c.Result < 5, "should be less than %v", 5)
             },
@@ -82,5 +86,7 @@ func TestSum(t *testing.T) {
         // Call The Actual Function
         return Sum(a.a, a.b)
     })
+    
+    // ... After All ...
 }
 ```
