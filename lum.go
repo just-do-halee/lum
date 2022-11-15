@@ -22,7 +22,7 @@ type Context[Arg Argumenter, Res Resulter] struct {
 	reason    string
 	logs      Stringify
 
-	IsFatal    bool
+	isFatal    bool
 	isParallel bool
 }
 
@@ -60,12 +60,12 @@ func (c *Context[Arg, Res]) Fatal(a ...any) {
 	sb.WriteString(c.String())
 	sb.WriteStrings(a...)
 	sb.Writeln()
-	c.IsFatal = true
+	c.isFatal = true
 	c.t.Fatal(sb.String())
 }
 
 func (c *Context[Arg, Res]) Fatalf(format string, a ...any) {
-	c.IsFatal = true
+	c.isFatal = true
 	c.t.Fatal(c.String(), fmt.Sprintf(format, a...), "\n")
 }
 func (c *Context[Arg, Res]) Fail(a ...any) {
@@ -225,7 +225,7 @@ func (b Batch[Arg, Res]) Mock() Batch[Arg, Res] {
 
 func (b Batch[Arg, Res]) Run(t *testing.T, fnName string, beforeEach Fn[Arg, Res], afterEach FnPass[Arg, Res]) {
 	for _, test := range b {
-		if test.Run(t, fnName, beforeEach, afterEach).IsFatal {
+		if test.Run(t, fnName, beforeEach, afterEach).isFatal {
 			break
 		}
 	}
