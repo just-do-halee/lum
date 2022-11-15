@@ -46,9 +46,9 @@ func TestSum(t *testing.T) {
         a, b int
     }
     // Context Alias
+    // [Argument, Result Type]
     type Ctx = *lum.Context[Args, int]
 
-    // [Argument, Result Type]
     lum.Batch[Args, int]{
         {
             Name: "1 + 1 = 2",
