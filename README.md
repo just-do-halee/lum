@@ -1,7 +1,7 @@
 
 # **`Lum`**
 
-`Lum` is a simple, expandable, ergonomic test tool in Go (Amazingly small package lol).
+`Lum` is a simple, ergonomic test tool in Go (Amazingly small package).
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/just-do-halee/lum.svg)](https://pkg.go.dev/github.com/just-do-halee/lum)
 [![CI][ci-badge]][ci-url]
@@ -19,6 +19,31 @@
 
 ```shell
 go get -u github.com/just-do-halee/lum@latest
+```
+
+## **`Template`**
+
+```go
+import (
+    "testing"
+
+    "github.com/just-do-halee/lum"
+)
+
+func TestFn(t *testing.T) {
+    type Args struct {
+        a, b int
+    }
+    type Ret = int
+    type Ctx = *lum.Context[Args, Ret]
+    lum.Batch[Args, Ret]{
+        {
+            Name: "description",
+            Args: Args{0, 0},
+            Pass: lum.Todo[Args, Ret]()
+        },
+    }.Run(t, "Fn", nil, nil)
+}
 ```
 
 ## **`How to use,`**
@@ -45,9 +70,10 @@ func TestSum(t *testing.T) {
     type Args struct {
         a, b int
     }
+    // Return Type
+    type Ret = int 
     // Context Alias
-    // [Argument, Result Type]
-    type Ctx = *lum.Context[Args, int]
+    type Ctx = *lum.Context[Args, Ret]
 
     lum.Batch[Args, int]{
         {
@@ -79,9 +105,9 @@ func TestSum(t *testing.T) {
             Name: "2 + 4 != 7",
             Args: Args{2, 4},
             // This is todo, so it will occur an error has meta message
-            Pass: lum.Todo[Args, int]("not equal testing"),
+            Pass: lum.Todo[Args, Ret]("not equal testing"),
         },
-    }.Run(t, "Sum", func(a Args) int {
+    }.Run(t, "Sum", func(a Args) Ret {
         // ... Before Each ...
 
         // Call The Actual Function
