@@ -22,7 +22,12 @@ type Context[Arg Argumenter, Res Resulter] struct {
 	reason    string
 	logs      Stringify
 
-	IsFatal bool
+	IsFatal    bool
+	isParallel bool
+}
+
+func (c *Context[Arg, Res]) IsParallel() bool {
+	return c.isParallel
 }
 
 func (c *Context[Arg, Res]) setReason(a ...any) {
@@ -164,6 +169,9 @@ type Field[Arg Argumenter, Res Resulter] struct {
 	Args Arg
 	Pass FnPass[Arg, Res]
 	Loop uint
+	// If Parallel is true, the field will be run in parallel
+	// and it does not dedicate Loop in parallel.
+	Parallel bool
 }
 
 func (f Field[Arg, Res]) Mock() Field[Arg, Res] {
@@ -188,6 +196,9 @@ func (f Field[Arg, Res]) Run(t *testing.T, fnName string, beforeEach Fn[Arg, Res
 		}
 		if f.Loop == 0 {
 			f.Loop = 1
+		}
+		if f.Parallel {
+			t.Parallel()
 		}
 		isLoop := f.Loop > 1
 		for i := uint(1); i <= f.Loop; i++ {

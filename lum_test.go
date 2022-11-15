@@ -18,9 +18,10 @@ func TestBatchRun(t *testing.T) {
 			Pass: func(c Ctx) {
 				c.Logf("%v + %v = %v", c.Arguments.a, c.Arguments.b, c.Result)
 				c.AssertResultEqual(c.Arguments.a + c.Arguments.b)
-				c.Arguments.a++
+				// c.Arguments.a++
 			},
-			Loop: 10,
+			Loop:     1000000,
+			Parallel: true,
 		},
 		{
 			Name: "It should be",
