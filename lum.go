@@ -80,58 +80,61 @@ func (c *Context[Arg, Res]) Failf(format string, a ...any) {
 	c.t.Error(c.String(), fmt.Sprintf(format, a...), "\n")
 }
 
+const assertEqualFailFormat = "%v == %v [fail]"
+const assertNotEqualFailFormat = "%v != %v [fail]"
+
 func (c *Context[Arg, Res]) AssertResultEqual(rhs Res, a ...any) {
 	if c.Result != rhs {
-		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.setReasonf(assertEqualFailFormat, c.Result, rhs)
 		c.Fail(a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertResultEqualf(rhs Res, format string, a ...any) {
 	if c.Result != rhs {
-		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.setReasonf(assertEqualFailFormat, c.Result, rhs)
 		c.Failf(format, a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertEqual(lhs, rhs Res, a ...any) {
 	if lhs != rhs {
-		c.setReasonf("%v == %v [fail]", lhs, rhs)
+		c.setReasonf(assertEqualFailFormat, lhs, rhs)
 		c.Fail(a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertEqualf(lhs, rhs Res, format string, a ...any) {
 	if lhs != rhs {
-		c.setReasonf("%v == %v [fail]", lhs, rhs)
+		c.setReasonf(assertEqualFailFormat, lhs, rhs)
 		c.Failf(format, a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertResultNotEqual(rhs Res, a ...any) {
 	if c.Result == rhs {
-		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.setReasonf(assertNotEqualFailFormat, c.Result, rhs)
 		c.Fail(a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertResultNotEqualf(rhs Res, format string, a ...any) {
 	if c.Result == rhs {
-		c.setReasonf("%v == %v [fail]", c.Result, rhs)
+		c.setReasonf(assertNotEqualFailFormat, c.Result, rhs)
 		c.Failf(format, a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertNotEqual(lhs, rhs Res, a ...any) {
 	if lhs == rhs {
-		c.setReasonf("%v != %v [fail]", lhs, rhs)
+		c.setReasonf(assertNotEqualFailFormat, lhs, rhs)
 		c.Fail(a...)
 	}
 }
 
 func (c *Context[Arg, Res]) AssertNotEqualf(lhs, rhs Res, format string, a ...any) {
 	if lhs == rhs {
-		c.setReasonf("%v != %v [fail]", lhs, rhs)
+		c.setReasonf(assertNotEqualFailFormat, lhs, rhs)
 		c.Failf(format, a...)
 	}
 }
@@ -147,6 +150,76 @@ func (c *Context[Arg, Res]) Assertf(b bool, format string, a ...any) {
 	if !b {
 		c.setReason("<assertion>")
 		c.Failf(format, a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalResultEqual(rhs Res, a ...any) {
+	if c.Result != rhs {
+		c.setReasonf(assertEqualFailFormat, c.Result, rhs)
+		c.Fatal(a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalResultEqualf(rhs Res, format string, a ...any) {
+	if c.Result != rhs {
+		c.setReasonf(assertEqualFailFormat, c.Result, rhs)
+		c.Fatalf(format, a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalEqual(lhs, rhs Res, a ...any) {
+	if lhs != rhs {
+		c.setReasonf(assertEqualFailFormat, lhs, rhs)
+		c.Fatal(a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalEqualf(lhs, rhs Res, format string, a ...any) {
+	if lhs != rhs {
+		c.setReasonf(assertEqualFailFormat, lhs, rhs)
+		c.Fatalf(format, a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalResultNotEqual(rhs Res, a ...any) {
+	if c.Result == rhs {
+		c.setReasonf(assertNotEqualFailFormat, c.Result, rhs)
+		c.Fatal(a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalResultNotEqualf(rhs Res, format string, a ...any) {
+	if c.Result == rhs {
+		c.setReasonf(assertNotEqualFailFormat, c.Result, rhs)
+		c.Fatalf(format, a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalNotEqual(lhs, rhs Res, a ...any) {
+	if lhs == rhs {
+		c.setReasonf(assertNotEqualFailFormat, lhs, rhs)
+		c.Fatal(a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalNotEqualf(lhs, rhs Res, format string, a ...any) {
+	if lhs == rhs {
+		c.setReasonf(assertNotEqualFailFormat, lhs, rhs)
+		c.Fatalf(format, a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatal(b bool, a ...any) {
+	if !b {
+		c.setReason("<assertion>")
+		c.Fatal(a...)
+	}
+}
+
+func (c *Context[Arg, Res]) AssertFatalf(b bool, format string, a ...any) {
+	if !b {
+		c.setReason("<assertion>")
+		c.Fatalf(format, a...)
 	}
 }
 
