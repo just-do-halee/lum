@@ -14,9 +14,10 @@ func TestSum(t *testing.T) {
 		// for distinguishing test cases
 		autoInc bool
 	}
-	type Ctx = *lum.Context[Args, int]
+	type Ret = int
+	type Ctx = *lum.Context[Args, Ret]
 
-	lum.Batch[Args, int]{
+	lum.Batch[Args, Ret]{
 		{
 			Name: "Increment lhs by 1, 100 times",
 			Args: Args{1, 1, true},
@@ -38,7 +39,7 @@ func TestSum(t *testing.T) {
 			},
 			Loop: 10,
 		},
-	}.Run(t, "Sum", func(a Args) int {
+	}.Run(t, "Sum", func(a Args) Ret {
 		// before each
 		return Sum(a.a, a.b)
 	}, func(c Ctx) {
